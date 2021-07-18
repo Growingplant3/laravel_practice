@@ -1,0 +1,31 @@
+version: "3.9"
+services:
+  app:
+    container_name: base_php
+    build:
+      context: ./infrastructure/php
+      dockerfile: ./Dockerfile
+    volumes:
+      - ./application:/var/www
+    tty: true
+
+  web:
+    container_name: base_nginx
+    image: nginx:1.20-alpine
+    ports:
+      - 8080:80
+    volumes:
+      - ./infrastructure/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./application:/var/www
+    working_dir: /var/www
+
+  db:
+    container_name: base_mysql
+    build: ./infrastructure/mysql
+    volumes:
+      - db-store:/var/lib/mysql
+    ports:
+      - 3307:3306
+
+volumes:
+  db-store:
